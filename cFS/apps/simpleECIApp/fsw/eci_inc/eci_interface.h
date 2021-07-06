@@ -215,7 +215,7 @@ static const ECI_Evs_t ECI_Events[] = {
   { ECI_EVENT_2_DATA,                          /** Macro defining type of ECI event, 
                                                 * in this case, event with 2 data points*/
     &(uint8){1},                                         /* ID for this event, unqiue to this app */
-    &(uint8){CFE_EVS_INFORMATION},                       /* Type of event */
+    &(uint8){CFE_EVS_EventType_INFORMATION},                       /* Type of event */
     &(uint32){CFE_EVS_NO_FILTER},                         /* Event mask */
     &isOverThresh,                             /** Pointer to flag */
     "Value was over threshold! (%d > %d)",     /** fprintf-style format string */
@@ -230,7 +230,7 @@ static const ECI_Evs_t ECI_Events[] = {
   { ECI_EVENT_0_DATA,                          /** Macro defining type of ECI event, 
                                                 ** in this case, event with no data points*/
     &(uint8){2},
-    &(uint8){CFE_EVS_INFORMATION},
+    &(uint8){CFE_EVS_EventType_INFORMATION},
     &(uint32){CFE_EVS_NO_FILTER}, 
     (bool*)&input_CmdPkt.processData,
     "Got command to process data!",
