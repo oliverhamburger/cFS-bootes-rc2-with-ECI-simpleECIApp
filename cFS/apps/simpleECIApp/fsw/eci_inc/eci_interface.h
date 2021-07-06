@@ -207,7 +207,7 @@ static ECI_Msg_t ECI_MsgRcv[] = {
  * is accessible from the header file included above, then this declaration 
  * isn't necessary.
  */
-extern boolean isOverThresh;
+extern bool isOverThresh;
 
 /** Create array of structures with error type, pointer to observable signal location,
    the location comment, and the event message */
@@ -232,7 +232,7 @@ static const ECI_Evs_t ECI_Events[] = {
     &(uint8){2},
     &(uint8){CFE_EVS_INFORMATION},
     &(uint32){CFE_EVS_NO_FILTER}, 
-    (boolean*)&input_CmdPkt.processData,
+    (bool*)&input_CmdPkt.processData,
     "Got command to process data!",
     "external code run()",
     0,                                         /** Zeros for unused data points */
@@ -261,7 +261,7 @@ static const ECI_Evs_t ECI_Events[] = {
 /* Create array of Flag structures with id and flag */
 static const ECI_Flag_t ECI_Flags[] = {
   { &(uint8){1},                        /** ID of this flag (unqiue to this app) */
-    (boolean *)&isOverThresh            /** Flag to be telemetered */
+    (bool *)&isOverThresh            /** Flag to be telemetered */
   },
 
   { 0, 0 }                              /** The table is null-terminated */

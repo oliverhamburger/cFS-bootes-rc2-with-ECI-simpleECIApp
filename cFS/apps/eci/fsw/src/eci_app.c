@@ -113,7 +113,7 @@ typedef struct {
     int                    qhd;        /* Index into first element in cmd queue */
     int                    qtl;        /* Index into last element in cmd queue */
     int                    qcnt;       /* Number of messages in cmd queue */
-    boolean                qexists;    /* Flag verifying existence of cmd queue */
+    bool                qexists;    /* Flag verifying existence of cmd queue */
     uint16                 seq;        /* Sequence number for command msgs */
 } ECI_InternalMsg_t;
 
@@ -137,7 +137,7 @@ typedef struct {
 
 #ifdef ECI_CDS_TABLE_DEFINED
    CFE_ES_CDSHandle_t CDSHandle[SIZEOF_ARRAY(ECI_CdsTable) - 1];  /*  Handle to CDS memory block */
-   boolean            CDS_Avail;  /* Flag indicating whether CDS is available */
+   bool            CDS_Avail;  /* Flag indicating whether CDS is available */
 #endif
 
 #ifdef ECI_FLAG_TABLE_DEFINED
@@ -324,7 +324,7 @@ static int32 sb_init(void)
       MsgRcv[idx].qtl = 1;
       MsgRcv[idx].qhd = 1;
       MsgRcv[idx].seq = 0;
-      MsgRcv[idx].qexists = FALSE;
+      MsgRcv[idx].qexists = false;
         
       /* Identify messages with queue (all received cmd messages have queue) */
       if (CCSDS_SID_TYPE(MsgRcv[idx].MsgStruct->mid) == CCSDS_CMD)
@@ -355,7 +355,7 @@ static int32 sb_init(void)
          } /* End if-statement */
 
          /* Cmd queue Status Verified */
-         MsgRcv[idx].qexists = TRUE;
+         MsgRcv[idx].qexists = true;
 
          /* Initialization cmd queue */
          CFE_PSP_MemSet(MsgRcv[idx].MsgStruct->qptr, 0, ECI_CMD_MSG_QUEUE_SIZE * MsgRcv[idx].MsgStruct->siz);
@@ -380,7 +380,7 @@ static int32 sb_init(void)
    /* Init cFE Msg Outputted */
    for (idx = 0; idx < SIZEOF_ARRAY(ECI_MsgSnd) - 1; idx++)
    {
-      CFE_SB_InitMsg(ECI_MsgSnd[idx].mptr, ECI_MsgSnd[idx].mid, ECI_MsgSnd[idx].siz, TRUE);
+      CFE_SB_InitMsg(ECI_MsgSnd[idx].mptr, ECI_MsgSnd[idx].mid, ECI_MsgSnd[idx].siz, true);
    } /* End for-loop */
 
    return CFE_SUCCESS;
@@ -622,7 +622,7 @@ static int32 cds_init(void) {
 
    int idx;
 
-   ECI_AppData.CDS_Avail = TRUE;
+   ECI_AppData.CDS_Avail = true;
 
    /* Register CDS data */
    for (idx = 0; idx < SIZEOF_ARRAY(ECI_CdsTable) - 1; idx++)
@@ -643,7 +643,7 @@ static int32 cds_init(void) {
 
       } else if (status == CFE_ES_NOT_IMPLEMENTED) {  /* If CDS is unavailable */
 
-         ECI_AppData.CDS_Avail = FALSE;
+         ECI_AppData.CDS_Avail = true;
          CFE_EVS_SendEvent(ECI_CDS_NOT_AVAIL_INF_EID, CFE_EVS_INFORMATION, "CDS not available for ECI_CdsTable");
          break;
 
@@ -654,7 +654,7 @@ static int32 cds_init(void) {
       } /* End if-else statement */
    } /* End for-statement */
 
-   if (status >= CFE_SUCCESS || ECI_AppData.CDS_Avail == FALSE)
+   if (status >= CFE_SUCCESS || ECI_AppData.CDS_Avail == false)
       status = CFE_SUCCESS;
 
 #endif /* ECI_CDS_TABLE_DEFINED */
@@ -683,11 +683,11 @@ static int32 app_init(void)
    ECI_AppData.RunStatus = CFE_ES_APP_RUN;
 
    /* Initialize housekeeping packet (clear user data area).*/
-   CFE_SB_InitMsg(&ECI_AppData.HkPacket, ECI_HK_MID, sizeof(ECI_HkPacket_t), TRUE);
+   CFE_SB_InitMsg(&ECI_AppData.HkPacket, ECI_HK_MID, sizeof(ECI_HkPacket_t), true);
 
 #ifdef ECI_FLAG_TABLE_DEFINED 
    /* Initialize FDC packet */
-   CFE_SB_InitMsg(&ECI_AppData.FDCPacket, ECI_FLAG_MID, sizeof(App_FaultRep_SbMsg), TRUE);
+   CFE_SB_InitMsg(&ECI_AppData.FDCPacket, ECI_FLAG_MID, sizeof(App_FaultRep_SbMsg), true);
 #endif
 
    /* Create Software Bus command message pipe. */
@@ -779,13 +779,13 @@ static int32 app_init(void)
  * \retval TRUE  = The message packet passes message length check.
  * \retval FALSE = The message packet failes message length check.
  ********************************************************************/
-static boolean verify_msg_length(CFE_SB_MsgId_t messageID, uint16 actualLength, uint16 expectedLength, int cmdMsgTypeCheck) {
+static bool verify_msg_length(CFE_SB_MsgId_t messageID, uint16 actualLength, uint16 expectedLength, int cmdMsgTypeCheck) {
 
-   boolean tlmFail,cmdFail, result = TRUE;
+   bool tlmFail,cmdFail, result = true;
    int msgType;
 
-   tlmFail = FALSE;
-   cmdFail = FALSE;
+   tlmFail = false;
+   cmdFail = false;
 
    msgType = CCSDS_SID_TYPE(messageID);
 
@@ -794,20 +794,20 @@ static boolean verify_msg_length(CFE_SB_MsgId_t messageID, uint16 actualLength, 
     */
    if (cmdMsgTypeCheck == LESS_THAN_EQUAL) {
       if ( msgType == CCSDS_TLM && actualLength > expectedLength) {
-         tlmFail = TRUE;
+         tlmFail = true;
       } /* End if statement */
 
       if ( msgType == CCSDS_CMD && actualLength > expectedLength) {
-         cmdFail = TRUE;
+         cmdFail = true;
       } /* End if statement */
 
    } else { /* DEFAULT is a check for not EQUAL */   
       if ( msgType == CCSDS_TLM && actualLength != expectedLength) {
-         tlmFail = TRUE;
+         tlmFail = true;
       } /* End if statement */
 
       if ( msgType == CCSDS_CMD && actualLength != expectedLength) {
-         cmdFail = TRUE;
+         cmdFail = true;
       } /* End if statement */
    } /* End if-else statement */
 
@@ -816,7 +816,7 @@ static boolean verify_msg_length(CFE_SB_MsgId_t messageID, uint16 actualLength, 
       CFE_EVS_SendEvent(ECI_TLM_LEN_ERR_EID, CFE_EVS_ERROR,
          "Invalid tlm pkt: ID = 0x%X, Len = %d (Expected = %d)",
          messageID, actualLength, expectedLength);
-      result = FALSE;
+      result = false;
    } /* End if statement */
 
    /* Command message length check failed */
@@ -824,7 +824,7 @@ static boolean verify_msg_length(CFE_SB_MsgId_t messageID, uint16 actualLength, 
       CFE_EVS_SendEvent(ECI_CMD_LEN_ERR_EID, CFE_EVS_ERROR,
          "Invalid cmd pkt: ID = 0x%X, Len = %d (Expected = %d)",
          messageID, actualLength, expectedLength);
-      result = FALSE;
+      result = false;
    } /* End if statement */
 
    return (result);
@@ -946,7 +946,7 @@ static ECI_MsgControl_t enqueue_cmd_msg(const CFE_SB_MsgPtr_t msg, const unsigne
 static ECI_MsgControl_t msg_manage(const CFE_SB_MsgPtr_t msg, const unsigned int idx) {
 
    /* Buffers Telemetry Message Data */
-   if (MsgRcv[idx].qexists == FALSE) {
+   if (MsgRcv[idx].qexists == false) {
 
       CFE_PSP_MemCpy(MsgRcv[idx].MsgStruct->mptr, msg, MsgRcv[idx].MsgStruct->siz);
 
@@ -976,10 +976,10 @@ static void rcv_msg(const CFE_SB_MsgPtr_t msg, CFE_SB_MsgId_t mid, uint16 Actual
    ECI_MsgControl_t  status;
 
    /* Flag indicating that msg id received is subscribed */
-   boolean IDFound = FALSE;
+   bool IDFound = false;
 
    /* Verify cmd messages should be received */
-   boolean CmdMsgRcv = (CCSDS_SID_TYPE(mid) == CCSDS_CMD);
+   bool CmdMsgRcv = (CCSDS_SID_TYPE(mid) == CCSDS_CMD);
 
    /* Loop through to see if message matches mid */
    for (idx = 0; idx < SIZEOF_ARRAY(ECI_MsgRcv) - 1; idx++) {
@@ -987,7 +987,7 @@ static void rcv_msg(const CFE_SB_MsgPtr_t msg, CFE_SB_MsgId_t mid, uint16 Actual
       /* Message matches a receive message ID */
       if (MsgRcv[idx].MsgStruct->mid == mid) {
 
-         IDFound = TRUE;
+         IDFound = true;
 
          /* Verify Length of Received Message */
          if (verify_msg_length(mid, ActualLength, MsgRcv[idx].MsgStruct->siz, EQUAL)) {
@@ -1605,7 +1605,7 @@ void ECI_APP_MAIN(void) {
     * in the Application's status. If there is a request to kill this
     * App, it will be passed in through the RunLoop call.
     */
-   while (CFE_ES_RunLoop(&ECI_AppData.RunStatus) == TRUE) {
+   while (CFE_ES_RunLoop(&ECI_AppData.RunStatus) == true) {
 
       /* Performance Log Exit Stamp. */
       CFE_ES_PerfLogExit(ECI_PERF_ID);
